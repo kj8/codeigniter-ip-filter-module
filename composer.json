@@ -1,0 +1,21 @@
+{
+    "name": "kj8/codeigniter4-ip-filter-module",
+    "description": "CodeIgniter 4 module to filter IP addresses for access control.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Kj8\\Module\\IpFilter\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.1",
+        "codeigniter4/framework": "^4.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "friendsofphp/php-cs-fixer": "^3.92",
+        "overtrue/phplint": "^9.6",
+        "rector/rector": "^2.2"
+    }
+}
