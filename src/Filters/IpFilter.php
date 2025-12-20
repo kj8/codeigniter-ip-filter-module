@@ -6,10 +6,9 @@ namespace Kj8\Module\IpFilter\Filters;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\Filters\FilterInterface;
+use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Language\Language;
-use CodeIgniter\View\View;
 use Kj8\Module\IpFilter\Config\IpFilter as IpFilterConfig;
 
 class IpFilter implements FilterInterface
@@ -26,36 +25,14 @@ class IpFilter implements FilterInterface
          */
         $config = Factories::config('IpFilter');
 
-        /**
-         * @var View $view
-         */
-        $view = Factories::get('view', View::class);
-
-        /**
-         * @var ResponseInterface $response
-         */
-        $response = Factories::get('response', ResponseInterface::class);
-
-        /**
-         * @var Language $language
-         */
-        $language = Factories::get('language', Language::class);
-
         $ip = $request->getIPAddress();
 
         if (IpFilterConfig::MODE_ALLOW === $config->mode && !\in_array($ip, $config->allowedIPs, true)) {
-            return $response
-                ->setStatusCode(403)
-                ->setBody($view->render('Kj8\Module\IpFilter\Views\blocked', [
-                    'ip_filter_blocked_title' => $language->getLine('IpFilter.blockedTitle'),
-                    'ip_filter_blocked_message' => $language->getLine('IpFilter.blockedMessage'),
-                ]));
+            return $this->respond($request);
         }
 
         if (IpFilterConfig::MODE_DENY === $config->mode && \in_array($ip, $config->allowedIPs, true)) {
-            return $response
-                ->setStatusCode(403)
-                ->setBody($view->render('Kj8\Module\IpFilter\Views\blocked'));
+            return $this->respond($request);
         }
 
         return null;
@@ -67,5 +44,43 @@ class IpFilter implements FilterInterface
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
         return null;
+    }
+
+    private function respond(RequestInterface $request): ResponseInterface
+    {
+        // @phpstan-ignore function.notFound
+        $title = lang('IpFilter.blockedTitle');
+
+        // @phpstan-ignore function.notFound
+        $message = lang('IpFilter.blockedMessage');
+
+        /**
+         * @var ResponseInterface $response
+         */
+        // @phpstan-ignore function.notFound
+        $response = service('response');
+
+        if (
+            $request instanceof IncomingRequest && 'application/json' === $request->negotiate('media', ['application/json', 'text/html'])
+        ) {
+            return $response
+                ->setStatusCode(403)
+                ->setContentType('application/json')
+                ->setJSON([
+                    'status' => 'error',
+                    'message' => $title,
+                    'code' => 403,
+                ]);
+        }
+
+        // @phpstan-ignore function.notFound
+        $view = view('Kj8\Module\IpFilter\Views\blocked', [
+            'ip_filter_blocked_title' => $title,
+            'ip_filter_blocked_message' => $message,
+        ]);
+
+        return $response
+            ->setStatusCode(403)
+            ->setBody($view);
     }
 }
