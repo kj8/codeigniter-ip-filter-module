@@ -27,11 +27,9 @@ class IpFilter implements FilterInterface
 
         $ip = $request->getIPAddress();
 
-        if (IpFilterConfig::MODE_ALLOW === $config->mode && !\in_array($ip, $config->allowedIPs, true)) {
-            return $this->respond($request);
-        }
-
-        if (IpFilterConfig::MODE_DENY === $config->mode && \in_array($ip, $config->allowedIPs, true)) {
+        if ((IpFilterConfig::MODE_ALLOW === $config->mode && !\in_array($ip, $config->allowedIPs, true))
+             || (IpFilterConfig::MODE_DENY === $config->mode && \in_array($ip, $config->allowedIPs, true))
+        ) {
             return $this->respond($request);
         }
 
@@ -67,9 +65,9 @@ class IpFilter implements FilterInterface
                 ->setStatusCode(403)
                 ->setContentType('application/json')
                 ->setJSON([
-                    'status' => 'error',
-                    'message' => $title,
-                    'code' => 403,
+                    'status' => 403,
+                    'error' => 403,
+                    'messages' => ['error' => $message],
                 ]);
         }
 
