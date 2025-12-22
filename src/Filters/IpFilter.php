@@ -25,10 +25,22 @@ class IpFilter implements FilterInterface
          */
         $config = Factories::config('IpFilter');
 
-        $ip = $request->getIPAddress();
+        // nazwa zestawu IP (np. admin, api)
+        $setName = $arguments[0] ?? 'default';
 
-        if ((IpFilterConfig::MODE_ALLOW === $config->mode && !\in_array($ip, $config->allowedIPs, true))
-             || (IpFilterConfig::MODE_DENY === $config->mode && \in_array($ip, $config->allowedIPs, true))
+        if (!isset($config->sets[$setName])) {
+            throw new \RuntimeException("IpFilter: no configuration for set '{$setName}'");
+        }
+
+        $set = $config->sets[$setName];
+
+        $ip = $request->getIPAddress();
+        $mode = $set['mode'];
+        $ips = $set['ips'];
+
+        if (
+            (IpFilterConfig::MODE_ALLOW === $mode && !\in_array($ip, $ips, true))
+            || (IpFilterConfig::MODE_DENY === $mode && \in_array($ip, $ips, true))
         ) {
             return $this->respond($request);
         }
