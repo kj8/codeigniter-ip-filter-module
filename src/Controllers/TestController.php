@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Kj8\Module\IpFilter\Controllers;
 
-use CodeIgniter\Config\Factories;
+use CodeIgniter\Config\Services;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\ResponseInterface;
 
@@ -15,7 +15,7 @@ class TestController extends Controller
         /**
          * @var ResponseInterface $response
          */
-        $response = Factories::get('response', ResponseInterface::class);
+        $response = Services::response();
 
         return $response
             ->setStatusCode(200)

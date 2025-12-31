@@ -16,8 +16,6 @@ class IpFilter extends BaseConfig
     public const MODE_ALLOW = 'allow';
     public const MODE_DENY = 'deny';
 
-    public string $mode = self::MODE_ALLOW;
-
     /**
      * Zestawy IP.
      *
