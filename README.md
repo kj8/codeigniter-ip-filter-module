@@ -24,5 +24,5 @@ $routes->get('reports', 'Reports::index', ['filter' => 'kj8_ipfilter:admin']);
 ```
 
 ```bash
-php spark migrate -n Kj8\Module\IpFilter\Database\Migrations
+php spark migrate -n Kj8\\Module\\IpFilter
 ```
