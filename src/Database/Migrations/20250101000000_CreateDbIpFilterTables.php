@@ -40,7 +40,7 @@ class CreateDbIpFilterTables extends Migration
 
         $forge->addKey('id', true);
 
-        $forge->addUniqueKey('id');
+        $forge->addUniqueKey('set_name');
 
         $forge->createTable($config->setsTable, true);
 
