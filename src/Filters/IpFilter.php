@@ -6,10 +6,10 @@ namespace Kj8\Module\IpFilter\Filters;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\Filters\FilterInterface;
-use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Kj8\Module\IpFilter\Config\IpFilter as IpFilterConfig;
+use Kj8\Module\IpFilter\Config\Services;
 
 class IpFilter implements FilterInterface
 {
@@ -42,7 +42,9 @@ class IpFilter implements FilterInterface
             (IpFilterConfig::MODE_ALLOW === $mode && !\in_array($ip, $ips, true))
             || (IpFilterConfig::MODE_DENY === $mode && \in_array($ip, $ips, true))
         ) {
-            return $this->respond($request);
+            return Services::kj8IpFilterRequestTypeResolver()
+                ->resolve($request)
+                ->respond();
         }
 
         return null;
@@ -54,43 +56,5 @@ class IpFilter implements FilterInterface
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
         return null;
-    }
-
-    private function respond(RequestInterface $request): ResponseInterface
-    {
-        // @phpstan-ignore function.notFound
-        $title = lang('IpFilter.blockedTitle');
-
-        // @phpstan-ignore function.notFound
-        $message = lang('IpFilter.blockedMessage');
-
-        /**
-         * @var ResponseInterface $response
-         */
-        // @phpstan-ignore function.notFound
-        $response = service('response');
-
-        if (
-            $request instanceof IncomingRequest && 'application/json' === $request->negotiate('media', ['application/json', 'text/html'])
-        ) {
-            return $response
-                ->setStatusCode(403)
-                ->setContentType('application/json')
-                ->setJSON([
-                    'status' => 403,
-                    'error' => 403,
-                    'messages' => ['error' => $message],
-                ]);
-        }
-
-        // @phpstan-ignore function.notFound
-        $view = view('Kj8\Module\IpFilter\Views\blocked', [
-            'ip_filter_blocked_title' => $title,
-            'ip_filter_blocked_message' => $message,
-        ]);
-
-        return $response
-            ->setStatusCode(403)
-            ->setBody($view);
     }
 }
