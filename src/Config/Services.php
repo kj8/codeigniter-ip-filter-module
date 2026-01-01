@@ -68,7 +68,7 @@ class Services extends BaseService
     {
         if ($getShared) {
             /** @var IpFilterService $instance */
-            $instance = static::getSharedInstance('kj8IpFilter.static');
+            $instance = static::getSharedInstance('kj8IpFilterStatic');
 
             return $instance;
         }
@@ -83,7 +83,7 @@ class Services extends BaseService
     {
         if ($getShared) {
             /** @var IpFilterService $instance */
-            $instance = static::getSharedInstance('kj8IpFilter.db');
+            $instance = static::getSharedInstance('kj8IpFilterDb');
 
             return $instance;
         }
