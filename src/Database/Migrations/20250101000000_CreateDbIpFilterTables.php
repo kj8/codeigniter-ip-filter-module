@@ -6,8 +6,8 @@ namespace Kj8\Module\IpFilter\Database\Migrations;
 
 use CodeIgniter\Config\Factories;
 use CodeIgniter\Database\Migration;
-use Config\Database;
 use Kj8\Module\IpFilter\Config\DbIpFilter as DbIpFilterConfig;
+use Kj8\Module\IpFilter\Config\IpFilter as IpFilterConfig;
 
 class CreateDbIpFilterTables extends Migration
 {
@@ -16,7 +16,7 @@ class CreateDbIpFilterTables extends Migration
         /** @var DbIpFilterConfig $config */
         $config = Factories::config(DbIpFilterConfig::class);
 
-        $forge = Database::forge();
+        $forge = $this->forge;
 
         $forge->addField([
             'id' => [
@@ -31,10 +31,10 @@ class CreateDbIpFilterTables extends Migration
             'mode' => [
                 'type' => 'ENUM',
                 'constraint' => [
-                    DbIpFilterConfig::MODE_ALLOW,
-                    DbIpFilterConfig::MODE_DENY,
+                    IpFilterConfig::MODE_ALLOW,
+                    IpFilterConfig::MODE_DENY,
                 ],
-                'default' => DbIpFilterConfig::MODE_ALLOW,
+                'default' => IpFilterConfig::MODE_ALLOW,
             ],
         ]);
 
@@ -78,7 +78,7 @@ class CreateDbIpFilterTables extends Migration
         /** @var DbIpFilterConfig $config */
         $config = Factories::config(DbIpFilterConfig::class);
 
-        $forge = Database::forge();
+        $forge = $this->forge;
         $forge->dropTable($config->ipsTable, true);
         $forge->dropTable($config->setsTable, true);
     }
