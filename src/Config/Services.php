@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Kj8\Module\IpFilter\Config;
 
 use CodeIgniter\Config\BaseService;
+use Kj8\Module\IpFilter\Providers\DbIpSetProvider;
+use Kj8\Module\IpFilter\Providers\StaticIpSetProvider;
 use Kj8\Module\IpFilter\Resolvers\Ci4MediaTypeResolver;
 use Kj8\Module\IpFilter\Resolvers\MediaTypeResolverInterface;
 use Kj8\Module\IpFilter\Resolvers\RequestTypeResolver;
 use Kj8\Module\IpFilter\Responders\HTMLResponder;
 use Kj8\Module\IpFilter\Responders\JSONResponder;
+use Kj8\Module\IpFilter\Services\IpChecker;
+use Kj8\Module\IpFilter\Services\IpFilterService;
 
 /**
  * Services Configuration file.
@@ -58,5 +62,35 @@ class Services extends BaseService
         ];
 
         return new RequestTypeResolver($responders, self::kj8IpFilterCi4MediaTypeResolver());
+    }
+
+    public static function kj8IpFilterStatic(?bool $getShared = true): IpFilterService
+    {
+        if ($getShared) {
+            /** @var IpFilterService $instance */
+            $instance = static::getSharedInstance('kj8IpFilter.static');
+
+            return $instance;
+        }
+
+        return new IpFilterService(
+            new StaticIpSetProvider(),
+            new IpChecker()
+        );
+    }
+
+    public static function kj8IpFilterDb(?bool $getShared = true): IpFilterService
+    {
+        if ($getShared) {
+            /** @var IpFilterService $instance */
+            $instance = static::getSharedInstance('kj8IpFilter.db');
+
+            return $instance;
+        }
+
+        return new IpFilterService(
+            new DbIpSetProvider(),
+            new IpChecker()
+        );
     }
 }

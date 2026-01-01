@@ -4,7 +4,7 @@
 
 ```bash
 composer config repositories.kj8-codeigniter-ip-filter-module vcs https://github.com/kj8/codeigniter-ip-filter-module
-composer require kj8/codeigniter4-ip-filter-module:^1.0
+composer require kj8/codeigniter4-ip-filter-module:^2.0
 ```
 
 ```php
